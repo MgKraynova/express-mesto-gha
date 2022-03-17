@@ -4,7 +4,7 @@ module.exports.getAllCards = (req, res) => {
   Card.find({}).select('-__v')
     .then((result) => res.send(result))
     .catch((err) => {
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -20,7 +20,7 @@ module.exports.createCard = (req, res) => {
         res.status(400).send({ message: 'Ошибка. При создании карточки были переданы некорректные данные' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -42,7 +42,7 @@ module.exports.deleteCard = (req, res) => {
         res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -61,7 +61,7 @@ module.exports.likeCard = (req, res) => {
         res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -80,6 +80,6 @@ module.exports.dislikeCard = (req, res) => {
         res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };

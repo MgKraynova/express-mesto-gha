@@ -35,6 +35,6 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).send(`Ошибка ${err.name}: ${err.message}`);
+  res.status(500).send(`На сервере произошла ошибка: ${err.name}: ${err.message}`);
   next();
 });

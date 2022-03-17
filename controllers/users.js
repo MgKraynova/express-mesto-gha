@@ -4,7 +4,7 @@ module.exports.getAllUsers = (req, res) => {
   User.find({}).select('-__v')
     .then((result) => res.send(result))
     .catch((err) => {
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -29,7 +29,7 @@ module.exports.getUserById = (req, res) => {
         res.status(404).send({ message: 'Ошибка. Введен некорректный id пользователя' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err.name}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -42,7 +42,7 @@ module.exports.createUser = (req, res) => {
         res.status(400).send({ message: 'Ошибка. При создании пользователя были переданы некорректные данные' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -73,7 +73,7 @@ module.exports.updateUser = (req, res) => {
         res.status(400).send({ message: 'Ошибка. При обновлении данных пользователя были переданы некорректные данные' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
 
@@ -100,6 +100,6 @@ module.exports.updateUserAvatar = (req, res) => {
         res.status(404).send({ message: 'Ошибка. Переданы некорректные данные' });
         return;
       }
-      res.status(500).send({ message: `Ошибка ${err}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
     });
 };
