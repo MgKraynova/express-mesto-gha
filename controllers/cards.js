@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 
 module.exports.getAllCards = (req, res) => {
-  Card.find({})
+  Card.find({}).select('-__v')
     .then((result) => res.send(result))
     .catch((err) => {
       res.status(500).send({ message: `Ошибка ${err}` });
@@ -16,16 +16,32 @@ module.exports.createCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка. При создании карточки были переданы некорректные данные' });
+        return;
+      }
       res.status(500).send({ message: `Ошибка ${err}` });
     });
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findByIdAndRemove(req.params.cardId).select('-__v')
     .then((card) => {
-      res.send({ data: card });
+      if (card) {
+        res.send({ data: card });
+      } else {
+        res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
+      }
     })
     .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
+        return;
+      }
       res.status(500).send({ message: `Ошибка ${err}` });
     });
 };
@@ -35,8 +51,16 @@ module.exports.likeCard = (req, res) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  )
+  ).select('-__v')
     .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
+        return;
+      }
       res.status(500).send({ message: `Ошибка ${err}` });
     });
 };
@@ -46,8 +70,16 @@ module.exports.dislikeCard = (req, res) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  )
+  ).select('-__v')
     .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
+        return;
+      }
       res.status(500).send({ message: `Ошибка ${err}` });
     });
 };

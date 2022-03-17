@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 
@@ -16,11 +16,9 @@ app.listen(PORT, () => {
   console.log(`Сервер запущен на порту ${PORT}`);
 });
 
-
-
 app.use((req, res, next) => {
   req.user = {
-    _id: '62320672921704468e5ed5bf', // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '62320672921704468e5ed5bf',
   };
 
   next();
@@ -31,5 +29,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/users', routerUsers);
 app.use('/cards', routerCards);
 
+app.use((req, res, next) => {
+  res.status(404).send({ message: 'Ошибка 404. Запрашиваемые вами данные не найдены.' });
+  next();
+});
 
-// {"_id":{"$oid":"62320672921704468e5ed5bf"},
+app.use((err, req, res, next) => {
+  res.status(500).send(`Ошибка ${err.name}: ${err.message}`);
+  next();
+});
