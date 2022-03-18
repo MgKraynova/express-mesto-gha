@@ -39,7 +39,7 @@ module.exports.deleteCard = (req, res) => {
         return;
       }
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
+        res.status(400).send({ message: 'Ошибка. Введен некорректный id карточки' });
         return;
       }
       res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
@@ -67,7 +67,7 @@ module.exports.likeCard = (req, res) => {
         return;
       }
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
+        res.status(400).send({ message: 'Ошибка. Введен некорректный id карточки' });
         return;
       }
       res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
@@ -93,7 +93,7 @@ module.exports.dislikeCard = (req, res) => {
         return;
       }
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Ошибка. Введен некорректный id карточки' });
+        res.status(400).send({ message: 'Ошибка. Введен некорректный id карточки' });
         return;
       }
       res.status(500).send({ message: `На сервере произошла ошибка: ${err}` });
