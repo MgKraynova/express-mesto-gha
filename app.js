@@ -38,3 +38,8 @@ app.use((err, req, res, next) => {
   res.status(500).send(`На сервере произошла ошибка: ${err.name}: ${err.message}`);
   next();
 });
+
+process.on('uncaughtException', function (err) {
+  console.error(err.stack);
+  console.log('Node NOT Exiting...');
+});

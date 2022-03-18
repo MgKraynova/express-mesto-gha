@@ -47,11 +47,20 @@ module.exports.deleteCard = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
+  console.log('req.user._id', req.user._id);
+  console.log('req.params.cardId', req.params.cardId);
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   ).select('-__v')
+    .then((card) => {
+      if (card) {
+        res.send({ data: card });
+      } else {
+        res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
+      }
+    })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
@@ -71,6 +80,13 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   ).select('-__v')
+    .then((card) => {
+      if (card) {
+        res.send({ data: card });
+      } else {
+        res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
+      }
+    })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(404).send({ message: 'Ошибка. Карточка не найдена, попробуйте еще раз' });
