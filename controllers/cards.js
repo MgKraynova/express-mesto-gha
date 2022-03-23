@@ -14,7 +14,7 @@ module.exports.createCard = (req, res, next) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -33,7 +33,7 @@ module.exports.deleteCard = (req, res, next) => {
         Card.findByIdAndRemove(req.params.cardId).select('-__v')
           .then((card) => {
             if (card) {
-              res.send({ data: card });
+              res.send(card);
             } else {
               throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
             }
@@ -63,7 +63,7 @@ module.exports.likeCard = (req, res, next) => {
   ).select('-__v')
     .then((card) => {
       if (card) {
-        res.send({ data: card });
+        res.send(card);
       } else {
         throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
       }
@@ -88,7 +88,7 @@ module.exports.dislikeCard = (req, res, next) => {
   ).select('-__v')
     .then((card) => {
       if (card) {
-        res.send({ data: card });
+        res.send(card);
       } else {
         throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
       }
