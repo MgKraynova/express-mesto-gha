@@ -42,7 +42,7 @@ module.exports.createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  User.find({email})
+  User.find({ email })
     .then((response) => {
       if (response.length === 0) {
         bcrypt.hash(password, 10)
@@ -50,7 +50,7 @@ module.exports.createUser = (req, res, next) => {
             User.create({
               name, about, avatar, email, password: hash,
             })
-              .then((user) => res.send({data: user}))
+              .then((user) => res.send({ data: user }))
               .catch((err) => {
                 if (err.name === 'ValidationError') {
                   throw new ValidationError('Ошибка. При создании пользователя были переданы некорректные данные');
@@ -66,17 +66,16 @@ module.exports.createUser = (req, res, next) => {
     .catch(next);
 };
 
-
 module.exports.updateUser = (req, res, next) => {
-  const {name, about} = req.body;
+  const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    {name, about},
-    {new: true, runValidators: true},
+    { name, about },
+    { new: true, runValidators: true },
   ).select('-__v')
     .then((user) => {
       if (user) {
-        res.send({data: user});
+        res.send({ data: user });
       } else {
         throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
       }
@@ -97,15 +96,15 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
-  const {avatar} = req.body;
+  const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    {avatar},
-    {new: true, runValidators: true},
+    { avatar },
+    { new: true, runValidators: true },
   ).select('-__v')
     .then((user) => {
       if (user) {
-        res.send({data: user});
+        res.send({ data: user });
       } else {
         throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
       }
@@ -123,16 +122,16 @@ module.exports.updateUserAvatar = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
-        {_id: user._id},
+        { _id: user._id },
         'some-secret-key',
-        {expiresIn: '7d'},
+        { expiresIn: '7d' },
       );
-      res.send({token});
+      res.send({ token });
     })
     .catch(() => {
       throw new UnauthorizedError('Почта или пароль введены неправильно');
@@ -142,10 +141,10 @@ module.exports.login = (req, res, next) => {
 
 module.exports.getCurrentUserInfo = (req, res, next) => {
   const userId = req.user._id;
-  User.findOne({_id: userId}).select('-__v')
+  User.findOne({ _id: userId }).select('-__v')
     .then((user) => {
       if (user) {
-        res.send({data: user});
+        res.send({ data: user });
       } else {
         throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
       }

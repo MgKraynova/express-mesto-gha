@@ -26,22 +26,31 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId).select('-__v')
-    .then((card) => {
-      if (card) {
-        res.send({ data: card });
+  Card.findById(req.params.cardId).select('-__v')
+    .then((result) => {
+      const cardOwner = result.owner.toString().replace('new ObjectId("', '');
+      if (req.user._id === cardOwner) {
+        Card.findByIdAndRemove(req.params.cardId).select('-__v')
+          .then((card) => {
+            if (card) {
+              res.send({ data: card });
+            } else {
+              throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
+            }
+          })
+          .catch((err) => {
+            if (err.name === 'DocumentNotFoundError') {
+              throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
+            }
+            if (err.name === 'CastError') {
+              throw new CastError('Ошибка. Введен некорректный id карточки');
+            }
+            next();
+          })
+          .catch(next);
       } else {
-        throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
+        res.status(403).send({ message: 'Отстутствуют права на удаление чужой карточки' });
       }
-    })
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
-      }
-      if (err.name === 'CastError') {
-        throw new CastError('Ошибка. Введен некорректный id карточки');
-      }
-      next();
     })
     .catch(next);
 };
