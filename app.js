@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
+const auth = require('./middlewares/auth');
+
+const { login, createUser } = require('./controllers/users');
 
 const app = express();
 
@@ -16,15 +19,13 @@ app.listen(PORT, () => {
   console.log(`Сервер запущен на порту ${PORT}`);
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '62320672921704468e5ed5bf',
-  };
-
-  next();
-});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
 
 app.use('/users', routerUsers);
 app.use('/cards', routerCards);
