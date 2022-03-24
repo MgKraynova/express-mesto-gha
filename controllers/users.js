@@ -8,7 +8,7 @@ const ConflictingRequest = require('../errors/ConflictingRequest');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.getAllUsers = (req, res, next) => {
-  User.find({}).select('-__v')
+  User.find({})
     .then((result) => res.send(result))
     .catch(next);
 };
@@ -16,8 +16,8 @@ module.exports.getAllUsers = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      Error('Ошибка. Пользователь не найден, попробуйте еще раз');
-    }).select('-__v')
+      throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
+    })
     .then((result) => {
       if (result) {
         res.send(result);
@@ -26,15 +26,12 @@ module.exports.getUserById = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
-      }
       if (err.name === 'CastError') {
         throw new CastError('Ошибка. Введен некорректный id пользователя');
+      } else {
+        next(err);
       }
-      next();
-    })
-    .catch(next);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -50,20 +47,26 @@ module.exports.createUser = (req, res, next) => {
             User.create({
               name, about, avatar, email, password: hash,
             })
-              .then((user) => res.send({ data: user }))
+              .then(() => res.send({
+                data: {
+                  name, about, avatar, email,
+                },
+              }))
               .catch((err) => {
                 if (err.name === 'ValidationError') {
                   throw new ValidationError('Ошибка. При создании пользователя были переданы некорректные данные');
+                } else {
+                  next(err);
                 }
-                next();
-              })
-              .catch(next);
+              });
           });
       } else {
         throw new ConflictingRequest('Ошибка. Пользователь c таким email уже зарегистрирован');
       }
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -72,7 +75,7 @@ module.exports.updateUser = (req, res, next) => {
     req.user._id,
     { name, about },
     { new: true, runValidators: true },
-  ).select('-__v')
+  )
     .then((user) => {
       if (user) {
         res.send({ data: user });
@@ -81,18 +84,14 @@ module.exports.updateUser = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
-      }
       if (err.name === 'CastError') {
         throw new CastError('Ошибка. Введен некорректный id пользователя');
-      }
-      if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         throw new ValidationError('Ошибка. При обновлении данных пользователя были переданы некорректные данные');
+      } else {
+        next(err);
       }
-      next();
-    })
-    .catch(next);
+    });
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
@@ -101,7 +100,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     req.user._id,
     { avatar },
     { new: true, runValidators: true },
-  ).select('-__v')
+  )
     .then((user) => {
       if (user) {
         res.send({ data: user });
@@ -110,15 +109,12 @@ module.exports.updateUserAvatar = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
-      }
       if (err.name === 'CastError') {
         throw new CastError('Ошибка. Переданы некорректные данные');
+      } else {
+        next(err);
       }
-      next();
-    })
-    .catch(next);
+    });
 };
 
 module.exports.login = (req, res, next) => {
@@ -134,14 +130,13 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch(() => {
-      throw new UnauthorizedError('Почта или пароль введены неправильно');
-    })
-    .catch(next);
+      next(new UnauthorizedError('Почта или пароль введены неправильно'));
+    });
 };
 
 module.exports.getCurrentUserInfo = (req, res, next) => {
   const userId = req.user._id;
-  User.findOne({ _id: userId }).select('-__v')
+  User.findOne({ _id: userId })
     .then((user) => {
       if (user) {
         res.send({ data: user });
@@ -150,13 +145,10 @@ module.exports.getCurrentUserInfo = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
-      }
       if (err.name === 'CastError') {
         throw new CastError('Ошибка. Переданы некорректные данные');
+      } else {
+        next(err);
       }
-      next();
-    })
-    .catch(next);
+    });
 };

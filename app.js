@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { login, createUser } = require('./controllers/users');
 
@@ -36,7 +37,7 @@ app.post('/signup', celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(/https?:\/\/(www)?(\.)?[0-9а-яa-zё]{1,}\.[а-яa-zё]{2}[a-zа-яё\-._~:/?#[\]@!$&'()*+,;=]*#?/i),
     email: Joi.string().email().required(),
-    password: Joi.string().min(6).required(),
+    password: Joi.string().required(),
   }),
 }), createUser);
 
@@ -47,12 +48,7 @@ app.use('/cards', routerCards);
 
 app.use(errors());
 
-app.use((req, res, next) => {
-  res.status(404).send({ message: 'Ошибка 404. Запрашиваемые вами данные не найдены.' });
-  next();
-});
-
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
   res.status(statusCode).send({
@@ -60,6 +56,11 @@ app.use((err, req, res) => {
       ? 'На сервере произошла ошибка'
       : message,
   });
+  next();
+});
+
+app.use((req, res, next) => {
+  next(new NotFoundError('Ошибка 404. Запрашиваемые вами данные не найдены.'));
 });
 
 process.on('uncaughtException', (err) => {

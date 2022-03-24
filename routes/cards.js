@@ -13,10 +13,22 @@ routerCards.post('/', celebrate({
   }),
 }), createCard);
 
-routerCards.delete('/:cardId', deleteCard);
+routerCards.delete('/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().length(24).hex().required(),
+  }),
+}), deleteCard);
 
-routerCards.put('/:cardId/likes', likeCard);
+routerCards.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().length(24).hex().required(),
+  }),
+}), likeCard);
 
-routerCards.delete('/:cardId/likes', dislikeCard);
+routerCards.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().length(24).hex().required(),
+  }),
+}), dislikeCard);
 
 module.exports = routerCards;
