@@ -19,7 +19,7 @@ module.exports.createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError('Ошибка. При создании карточки были переданы некорректные данные');
+        next(new ValidationError('Ошибка. При создании карточки были переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -38,19 +38,21 @@ module.exports.deleteCard = (req, res, next) => {
             })
             .catch((err) => {
               if (err.name === 'CastError') {
-                throw new CastError('Ошибка. Введен некорректный id карточки');
+                next(new CastError('Ошибка. Введен некорректный id карточки'));
               } else {
                 next(err);
               }
             });
         } else {
-          throw new ForbiddenError('Отстутствуют права на удаление чужой карточки');
+          next(new ForbiddenError('Отстутствуют права на удаление чужой карточки'));
         }
+      } else {
+        next(new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз'));
       }
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
+        next(new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз'));
       } else {
         next(err);
       }
@@ -67,12 +69,12 @@ module.exports.likeCard = (req, res, next) => {
       if (card) {
         res.send(card);
       } else {
-        throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
+        next(new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new CastError('Ошибка. Введен некорректный id карточки');
+        next(new CastError('Ошибка. Введен некорректный id карточки'));
       } else {
         next(err);
       }
@@ -89,12 +91,12 @@ module.exports.dislikeCard = (req, res, next) => {
       if (card) {
         res.send(card);
       } else {
-        throw new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз');
+        next(new NotFoundError('Ошибка. Карточка не найдена, попробуйте еще раз'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new CastError('Ошибка. Введен некорректный id карточки');
+        next(new CastError('Ошибка. Введен некорректный id карточки'));
       } else {
         next(err);
       }

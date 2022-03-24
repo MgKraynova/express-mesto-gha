@@ -46,6 +46,10 @@ app.use(auth);
 app.use('/users', routerUsers);
 app.use('/cards', routerCards);
 
+app.use((req, res, next) => {
+  next(new NotFoundError('Ошибка 404. Запрашиваемые вами данные не найдены.'));
+});
+
 app.use(errors());
 
 app.use((err, req, res, next) => {
@@ -57,10 +61,6 @@ app.use((err, req, res, next) => {
       : message,
   });
   next();
-});
-
-app.use((req, res, next) => {
-  next(new NotFoundError('Ошибка 404. Запрашиваемые вами данные не найдены.'));
 });
 
 process.on('uncaughtException', (err) => {

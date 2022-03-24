@@ -16,18 +16,18 @@ module.exports.getAllUsers = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
+      next(new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз'));
     })
     .then((result) => {
       if (result) {
         res.send(result);
       } else {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
+        next(new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new CastError('Ошибка. Введен некорректный id пользователя');
+        next(new CastError('Ошибка. Введен некорректный id пользователя'));
       } else {
         next(err);
       }
@@ -54,14 +54,14 @@ module.exports.createUser = (req, res, next) => {
               }))
               .catch((err) => {
                 if (err.name === 'ValidationError') {
-                  throw new ValidationError('Ошибка. При создании пользователя были переданы некорректные данные');
+                  next(new ValidationError('Ошибка. При создании пользователя были переданы некорректные данные'));
                 } else {
                   next(err);
                 }
               });
           });
       } else {
-        throw new ConflictingRequest('Ошибка. Пользователь c таким email уже зарегистрирован');
+        next(new ConflictingRequest('Ошибка. Пользователь c таким email уже зарегистрирован'));
       }
     })
     .catch((err) => {
@@ -80,14 +80,14 @@ module.exports.updateUser = (req, res, next) => {
       if (user) {
         res.send({ data: user });
       } else {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
+        next(new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new CastError('Ошибка. Введен некорректный id пользователя');
+        next(new CastError('Ошибка. Введен некорректный id пользователя'));
       } else if (err.name === 'ValidationError') {
-        throw new ValidationError('Ошибка. При обновлении данных пользователя были переданы некорректные данные');
+        next(new ValidationError('Ошибка. При обновлении данных пользователя были переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -105,12 +105,12 @@ module.exports.updateUserAvatar = (req, res, next) => {
       if (user) {
         res.send({ data: user });
       } else {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
+        next(new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new CastError('Ошибка. Переданы некорректные данные');
+        next(new CastError('Ошибка. Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -141,12 +141,12 @@ module.exports.getCurrentUserInfo = (req, res, next) => {
       if (user) {
         res.send({ data: user });
       } else {
-        throw new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз');
+        next(new NotFoundError('Ошибка. Пользователь не найден, попробуйте еще раз'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new CastError('Ошибка. Переданы некорректные данные');
+        next(new CastError('Ошибка. Переданы некорректные данные'));
       } else {
         next(err);
       }
