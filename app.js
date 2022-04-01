@@ -6,6 +6,7 @@ const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { login, createUser } = require('./controllers/users');
 
@@ -23,6 +24,8 @@ app.listen(PORT, () => {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -49,6 +52,8 @@ app.use('/cards', routerCards);
 app.use((req, res, next) => {
   next(new NotFoundError('Ошибка 404. Запрашиваемые вами данные не найдены.'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
