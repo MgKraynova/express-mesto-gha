@@ -1,4 +1,33 @@
-[![Tests](https://github.com/mgkraynova/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/mgkraynova/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/mgkraynova/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/mgkraynova/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
-# Проект Mesto бэкенд
+<h1 align="center">Бекэнд для проекта "Mesto"</h1>
 
-Проект находится в разработке
+
+Проект выполнен в рамках обучения на курсе "Веб-разработчик" в Яндекс.Практикум для закрепления пройденного материала по **Node.js, Express.js**.
+
+Для запуска проекта локально необходимо использовать команду **npm run dev**.
+
+## Использованные технологии
+
+Сервер написан на **Node.js** с использованием фреймворка **Express.js**. 
+
+Для хранения информации используется база данных **MongoDB**.
+
+
+## Функциональность проекта
+Сервер позволяет:
+- осуществлять регистрацию пользователя;
+- проводить аутентификацию пользователя;
+- получать данные одного или всех пользователей;
+- получать данные карточек;
+- создавать и удалять карточку;
+- ставить и убирать лайки.
+
+Все ошибки централизованно обрабатываются.
+
+Приходящие на сервер запросы предварительно валидируются с помощью npm пакета **Joi**;
+
+## Дополнение
+Фронтенд проекта можно посмотреть по ссылке: https://github.com/MgKraynova/react-mesto-auth
+
+Фронтенд и бекэнд проекта были соединены в одно целое и задеплоены на удаленный сервер. Посмотреть репозиторий можно по ссылке: https://github.com/MgKraynova/react-mesto-api-full 
+
+Готовое приложение можно посмотреть по ссылке: https://mesto-app.nomoredomains.xyz/
